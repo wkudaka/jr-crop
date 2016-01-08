@@ -204,7 +204,7 @@ function($ionicModal, $rootScope, $q) {
     /**
      * Calculate the new image from the values calculated by
      * user input. Return a canvas-object with the image on it.
-     * 
+     *
      * Note: It doesn't actually downsize the image, it only returns
      * a cropped version. Since there's inconsistenties in image-quality
      * when downsizing it's up to the developer to implement this. Preferably
@@ -244,12 +244,19 @@ function($ionicModal, $rootScope, $q) {
       var promise = $q.defer();
 
       // Load the image and resolve with the DOM node when done.
-      angular.element('<img />')
+      var elem = angular.element('<img />')
         .bind('load', function(e) {
           promise.resolve(this);
         })
-        .bind('error', promise.reject)
-        .prop('src', this.options.url);
+        .bind('error', promise.reject);
+
+      if (this.options.crossOrigin) {
+        elem.prop('crossOrigin', 'anonymous');
+      }
+
+
+      elem.prop('src', this.options.url);
+
 
       // Return the promise
       return promise.promise;
@@ -264,7 +271,8 @@ function($ionicModal, $rootScope, $q) {
       cancelText: 'Cancel',
       chooseText: 'Choose',
       template: template,
-      circle: false
+      circle: false,
+      crossOrigin:false
     },
 
     crop: function(options) {
